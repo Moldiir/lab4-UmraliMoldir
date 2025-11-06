@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Заявка #' + ${request.id} + ' — редактирование'">Редактирование</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:900px;margin:24px auto;padding:0 12px}
+        .row{display:grid;grid-template-columns:1fr 2fr;gap:12px;align-items:center;margin-bottom:12px}
+        label{font-weight:600}
+        input[type="text"], textarea, select{padding:8px;border:1px solid #ddd;border-radius:8px;width:100%}
+        textarea{min-height:100px;resize:vertical}
+        .chk{display:flex;align-items:center;gap:8px}
+        .ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:8px}
+        .card{border:1px solid #eee;border-radius:12px;padding:16px}
+        .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:16px}
+        .btn{padding:10px 14px;border-radius:10px;border:1px solid #ddd;background:#f7f7f7;cursor:pointer}
+        .btn.primary{background:#0a7cff;color:#fff;border-color:#0a7cff}
+        a.btn{display:inline-block;text-decoration:none;text-align:center}
+    </style>
+</head>
+<body>
+
+<h1 th:text="'Заявка #' + ${request.id}">Редактирование заявки</h1>
+
+<form th:action="@{|/requests/${request.id}|}" method="post" th:object="${request}">
+    <div class="card">
+        <div class="row">
+            <label for="userName">Имя</label>
+            <input id="userName" type="text" th:field="*{userName}" placeholder="Имя клиента">
+        </div>
+
+        <div class="row">
+            <label for="phone">Телефон</label>
+            <input id="phone" type="text" th:field="*{phone}" placeholder="+7 ...">
+        </div>
+
+        <div class="row">
+            <label for="course">Курс</label>
+            <select id="course" th:field="*{course}">
+                <option th:value="${null}">— не выбран —</option>
+                <option th:each="c : ${courses}"
+                        th:value="${c.id}"
+                        th:text="${c.name + ' • ' + c.price + ' ₸'}"
+                        th:selected="${request.course != null} ? ${c.id} == ${request.course.id} : false">
+                </option>
+            </select>
+        </div>
+
+        <div class="row" style="align-items:start">
+            <label for="commentary">Комментарий</label>
+            <textarea id="commentary" th:field="*{commentary}" placeholder="Заметки оператора"></textarea>
+        </div>
+
+        <div class="row">
+            <label>Статус</label>
+            <div class="chk">
+                <input id="handled" type="checkbox" th:field="*{handled}">
+                <label for="handled" style="font-weight:400">Обработано</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <label>Операторы (назначить)</label>
+        <div class="ops">
+            <label th:each="op : ${operators}" class="chk" style="font-weight:400">
+                <input type="checkbox" name="operatorIds"
+                       th:value="${op.id}"
+                       th:checked="${selectedOperatorIds != null} ? ${selectedOperatorIds.contains(op.id)} : false">
+                <span th:text="${op.surname + ' ' + op.name + (op.department != null ? ' — ' + op.department : '')}">Оператор</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a class="btn" th:href="@{/}">Отмена</a>
+        <button class="btn primary" type="submit">Сохранить</button>
+    </div>
+</form>
+
+</body>
+</html>

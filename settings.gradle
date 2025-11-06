@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT) // можно FAIL_ON_PROJECT_REPOS, но так проще
+    repositories {
+        mavenCentral()
+    }
+}
+rootProject.name = "lab4-um"

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали заявки - CRM</title>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-person-lines-fill"></i>
+                Заявка №<span th:text="${request.id}"></span>
+            </h4>
+            <span th:if="${!request.handled}" class="badge bg-danger">Новая</span>
+            <span th:if="${request.handled}" class="badge bg-success">Обработана</span>
+        </div>
+
+        <div class="card-body">
+            <p><strong>ФИО:</strong> <span th:text="${request.userName}"></span></p>
+
+            <p><strong>Курс:</strong>
+                <span th:text="${request.course != null ? request.course.name : '—'}"></span>
+                <span class="text-muted" th:if="${request.course != null}"> — </span>
+                <span th:if="${request.course != null}" th:text="${request.course.price + ' ₸'}"></span>
+            </p>
+
+            <p><strong>Телефон:</strong> <span th:text="${request.phone}"></span></p>
+
+            <p><strong>Комментарий:</strong></p>
+            <p class="border rounded p-2 bg-light" th:text="${request.commentary}"></p>
+
+            <hr>
+
+            <h5>Назначенные операторы:</h5>
+            <ul class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    th:each="op : ${request.operators}">
+                    <span th:text="${op.name + ' ' + op.surname + ' (' + op.department + ')'}"></span>
+                    <!-- Удаление оператора (Лаб-5: 'их можно удалить') -->
+                    <form th:action="@{'/details/' + ${request.id} + '/operators/' + ${op.id} + '/remove'}"
+                          method="post" class="m-0">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-x-circle"></i> Удалить
+                        </button>
+                    </form>
+                </li>
+                <li class="list-group-item text-muted" th:if="${#lists.isEmpty(request.operators)}">
+                    Пока не назначено ни одного оператора
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                <a th:href="@{/}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад
+                </a>
+
+
+                <a th:if="${!request.handled}"
+                   th:href="@{'/process/' + ${request.id}}"
+                   class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Назначить операторов
+                </a>
+
+
+                <a th:if="${!request.handled}"
+                   th:href="@{'/edit/' + ${request.id}}"
+                   class="btn btn-warning">
+                    <i class="bi bi-pencil-square"></i> Редактировать
+                </a>
+
+
+                <a th:href="@{'/delete/' + ${request.id}}"
+                   class="btn btn-danger"
+                   onclick="return confirm('Удалить заявку безвозвратно?')">
+                    <i class="bi bi-trash"></i> Удалить
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form th:action="@{'/assign/' + ${request.id}}" method="post" class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="assignLabel">Выберите оператора</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div th:if="${#lists.isEmpty(operators)}" class="text-center text-muted py-3">
+                        <p>Нет доступных операторов для назначения.</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(operators)}" class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Выбрать</th>
+                                <th>Имя</th>
+                                <th>Фамилия</th>
+                                <th>Департамент</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="op : ${operators}">
+                                <td>
+                                    <input class="form-check-input" type="checkbox"
+                                           th:name="operatorIds" th:value="${op.id}">
+                                </td>
+                                <td th:text="${op.name}"></td>
+                                <td th:text="${op.surname}"></td>
+                                <td th:text="${op.department}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Назначить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const open = /*[[${openAssignModal} ? true : false]]*/ false;
+        if (open) {
+            const modal = new bootstrap.Modal(document.getElementById('assignModal'));
+            modal.show();
+        }
+    });
+</script>
+
+
+</body>
+</html>

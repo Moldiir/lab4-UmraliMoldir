@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить заявку - CRM Система</title>
+</head>
+
+<body>
+<div layout:fragment="content" class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="form-container mt-4" style="max-width: 700px;">
+                <h2 class="mb-4">Добавить заявку</h2>
+
+
+                <form th:action="@{/add}" th:object="${request}" method="post">
+                    <!-- ФИО -->
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">ФИО</label>
+                        <input type="text" class="form-control" id="userName"
+                               th:field="*{userName}" placeholder="Иванов Иван Иванович" required>
+                        <div class="form-text">Укажите полное имя</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="course" class="form-label">Курс</label>
+                        <select class="form-select" id="course" th:field="*{course.id}" required>
+                            <option value="" disabled th:if="${request.course == null}" selected>Выберите курс</option>
+                            <option th:each="c : ${courses}"
+                                    th:value="${c.id}"
+                                    th:text="${c.name + ' — ' + c.price + ' ₸'}">
+                            </option>
+                        </select>
+                        <div class="form-text">Список формируется из таблицы курсов</div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phone"
+                               th:field="*{phone}" placeholder="+7(XXX)XXXXXXX"
+                               pattern="\+7\(\d{3}\)\d{7}" inputmode="tel" autocomplete="tel" required>
+                        <div class="form-text">Формат: +7(XXX)XXXXXXX</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="commentary" class="form-label">Комментарии</label>
+                        <textarea class="form-control" id="commentary"
+                                  th:field="*{commentary}" rows="4"
+                                  placeholder="Ваши пожелания/вопросы" required></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Добавить заявку
+                        </button>
+                        <a th:href="@{/}" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

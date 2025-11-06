@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Новые заявки — CRM</title>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0 text-danger"><i class="bi bi-hourglass-split"></i> Новые заявки</h2>
+        <a th:href="@{/add}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Добавить заявку
+        </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(requests)}" class="text-center py-5 text-muted">
+        <i class="bi bi-inbox display-1 d-block mb-3"></i>
+        <h4>Новых заявок нет</h4>
+    </div>
+
+    <div class="row g-3" th:if="${!#lists.isEmpty(requests)}">
+        <div class="col-12 col-md-6 col-lg-4" th:each="r : ${requests}">
+            <div class="card h-100 border-danger shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-1" th:text="'Заявка от ' + ${r.userName}"></h5>
+
+                    <h6 class="card-subtitle text-muted mb-2">
+                        <span th:text="${'Курс: ' + (r.course != null ? r.course.name : '—')}"></span>
+                        <span class="ms-1">—</span>
+                        <span th:text="${r.course != null ? r.course.price + ' ₸' : ''}"></span>
+                    </h6>
+
+                    <p><strong>Тел.:</strong> <span th:text="${r.phone}"></span></p>
+                    <p class="text-truncate"
+                       style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;"
+                       th:text="${r.commentary}"></p>
+
+                    <div class="mt-auto d-flex gap-2">
+                        <a th:href="@{/details/{id}(id=${r.id})}" class="btn btn-sm btn-outline-secondary">
+                            Подробнее
+                        </a>
+                        <a th:href="@{/process/{id}(id=${r.id})}" class="btn btn-sm btn-primary">
+                            Назначить операторов
+                        </a>
+                        <a th:href="@{/delete/{id}(id=${r.id})}" class="btn btn-sm btn-danger ms-auto">
+                            Удалить
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
