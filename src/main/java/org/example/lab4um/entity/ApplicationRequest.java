@@ -2,6 +2,8 @@ package org.example.lab4um.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,4 +32,17 @@ public class ApplicationRequest {
             inverseJoinColumns = @JoinColumn(name = "operator_id")
     )
     private Set<Operators> operators = new HashSet<>();
+
+    public void setOperator(Operators op) {
+      this.operators.add(op);
+
+    }
+
+    public Courses getCourse() {
+        return course;
+    }
+
+    public void setCourse(Courses course) {
+        this.course = course;
+    }
 }
